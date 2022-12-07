@@ -8,6 +8,9 @@
 body {
   color: #fff;
 }
+img{
+  max-width: 100%;
+}
 section {
   background: url(/static/img/8775009_xl-Metal-Stopwatch---onpage_0.webp);
   height: 100vh;
