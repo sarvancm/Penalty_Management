@@ -1,0 +1,167 @@
+{% extends "user_viewbase.html" %} {% load static %} {% block content %}
+<div style="margin-left:30px;">
+    <a href="{% url 'userfine_search' %}"><button type="button" class="btn btn-outline-primary"><i
+                class="fa fa-arrow-left"></i> &nbsp; BACK</button></a>
+
+                
+</div>
+<div class="container mt-0">
+    <div class="card">
+        <div class="content content_content" style="width: 100%;">
+            <div class="invoice print-container" id="myfrm">
+                <!-- title row -->
+                <div class="row">
+                    <div class="col-xs-12 text-center w-100">
+                        <h2 class="card-header ">
+                            <i class="fa fa-globe"></i> ONLINE PAYMENT SYSTEM
+                        </h2>
+                    </div><!-- /.col -->
+                </div>
+                <div class="card-body">
+                    <div class="row invoice-info mt-3">
+                        <div class="col-sm-4 invoice-col">
+                            <h5> From</h5>
+                            <address style="margin-top: 10px;">
+                                <b>
+                                    Name&nbsp;:</b>&nbsp;<span style="text-transform: uppercase;">{{challan.offender.first_name}} {{challan.offender.last_name}}</span>
+                                <br>
+                                <b>Phone&nbsp;:</b>&nbsp;{{challan.offender.mobile_number}} <br>
+                                <b>Email&nbsp;:</b>&nbsp;{{challan.offender.email}}
+                            </address>
+    
+                        </div><!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                            <h5> To</h5>
+                            <address>
+                                <strong>TRAFFIC PENALTY DEPARTMENT,
+                                </strong>
+                                Nagercoil-629177.
+                            </address>
+                            <b>Challan&nbsp;Number&nbsp;:</b>&nbsp;{{challan.refrence}}
+                        </div><!-- /.col -->
+                        <div class="col-sm-4 invoice-col ">
+                            <span><b>Date :</b> {{challan.created_at|date:'F d, Y'}}</span><br>
+                            <span><b> Vehicle&nbsp;Number :</b><span style="text-transform: uppercase;">{{challan.vehicle_number}}</span>
+                            <br>
+                            <span><b> Aadhar&nbsp;Number :</b>{{challan.offender.aadhar_number}}</span>
+                            <br>
+                            <span><b> License&nbsp;Number :</b><span style="text-transform: uppercase;">{{challan.offender.license_number}}</span>
+                            <br>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+    
+                    <!-- Table row -->
+                    <div class="row mt-3">
+                        <div class="offset-sm-2"></div>
+                        <div class="col-sm-8 table-responsive mt-3">
+                            <table class="table table-hover table-striped">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>OFFENCES</th>
+                                        <th>PRICE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for offence in offences %}
+                                    <tr>
+                                        <td style="text-align:center;">{{ offence.offence.offence}}</td>
+                                        <td style="text-align: center;">{{ offence.penalty}}</td>
+                                    </tr>
+                                   {% endfor %}
+                                </tbody>
+                                <tfoot style="border-top: 2px solid black;">
+                                    <td style="text-align:center;font-weight: 600;">Total&nbsp;:</td>
+                                    <td style="text-align:center;"><b> Rs.</b>&nbsp;{{ challan.total_penalty }}</td>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    {% if  challan.payment_status %}
+                        <span class="outline-success d-block p-2 mt-4" >Due Amount Paid Successfully.</span>
+                        <span class="outline-info d-block p-2 mt-2" >On <b>Date :</b> {{challan.updated_at|date:'F d, Y'}} <br> {{ challan.updated_at|time:'h:i A' }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="no-print mt-4 d-flex justify-content-center p-2">
+                <div class="w-50 d-flex justify-content-around">
+                    <button type="button" class="btn btn-outline-info" onclick="window.print();"><i class="fa
+                            fa-print"></i> &nbsp; Print</button>
+
+                            {% if not challan.payment_status %}
+                    <Button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#exampleModal"><i class="fa
+                            fa-credit-card" ></i> &nbsp; Pay</Button>
+
+                            {% endif %}
+                     <button type="button" class="btn btn-outline-primary" id="btnExport"><i class="fa
+                            fa-download"></i> &nbsp; Generate PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+       
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Pay Amount</h5>
+
+          <button type="submit" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+
+        </form>
+
+
+        </div>
+       
+        <div class="modal-body">
+            <div class="imgplace">
+             <img src="{% static 'img/barcode.jpg' %}" class="profile" id="imagepreview"/>
+            
+          </div>
+        </div>
+        <div class="modal-footer">
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="custId" name="id" value="{{ challan.id }}">
+
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Paid</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======  PDF Scripts  ====== -->
+
+<script type="text/javascript" src="{% static 'js/jquery1.8.3print1.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pdfmake.min.js' %}"></script>
+
+
+
+
+
+<script type="text/javascript">
+    $("body").on("click", "#btnExport", function () {
+        html2canvas($('#myfrm')[0], {
+            onrendered: function (canvas) {
+                var data = canvas.toDataURL();
+                var docDefinition = {
+                    content: [{
+                        image: data,
+                        width: 500
+                    }]
+                };
+                pdfMake.createPdf(docDefinition).download("customer-details.pdf");
+            }
+        });
+    });
+</script>
+{% endblock content %}

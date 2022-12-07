@@ -1,0 +1,190 @@
+{% extends "dashboardbase.html" %}
+{% load static %}
+{% block content %}
+
+
+
+
+<!-- ========================= Add from  =========================== -->
+<div class="container">
+  <div class="card mt-">
+    <div class="card-header">
+      <h1 style="text-align: center; color: rgb(80, 80, 80);">Create New Member</h1>
+    </div>
+    <div class="card-body">
+      <div class="row ">
+        <div class="offset-sm-2"></div>
+        <div class="col-sm-8">
+          <div class="card">
+            <div class="card-body">
+              <form class="form-block" method="POST" autocomplete="off">
+                {% csrf_token %}
+                
+
+                {% if form.errors %}
+                <!-- Error messaging -->
+                <div id="errors">
+                  <div class="inner">
+                    <p class="p-2" id="errormes">There were some errors in the information you entered. Please correct the following:</p>
+                    <ul id="errorul">
+                      {% for field in form %}
+                      {% if field.errors %}<li>**{{ field.label }}: {{ field.errors|striptags }}</li>{% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+                <!-- /Error messaging -->
+                {% endif %}
+
+                <div class="form-group row mb-3">
+                  <label for="firstName" class="col-sm-4 col-form-label">First
+                    Name</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="firstName" value="{{form.first_name.value}}" name="first_name" required style="text-transform:capitalize;">
+                  </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                  <label for="lastName" class="col-sm-4 col-form-label">Last
+                    Name</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="lastName" name="last_name" value="{{form.last_name.value}}" required style="text-transform:capitalize;">
+                  </div>
+                </div>
+                <div class="form-group row mb-3">
+                  <label for="lastName" class="col-sm-4 col-form-label">User
+                    Name</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="middleName" value="{{form.username.value}}" name="username" required>
+                  </div>
+                </div>
+                <div class="form-group row mb-3">
+                  <label for="lastName" class="col-sm-4
+                            col-form-label">Password</label>
+                  <div class="col-sm-8">
+                    <input type="password" class="form-control pr-password password5" value="{{form.password1.value}}" name="password1" id="password" maxlength="20" required>
+                  </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                  <label for="password" class="col-sm-4
+                              col-form-label">Confirm Password</label>
+                  <div class="col-sm-8">
+                    <div class="input-field2">
+                    <input type="password" class="form-control password5" name="password2" value="{{form.password2.value}}" onkeyup="checksame()" id="confirmpassword" maxlength="20"
+                      required>
+                        <i class="far fa-eye-slash icon showHidePw5"></i>
+                      </div>
+                    <span style="color: red; display: none;" id="msgg">***Passwords are not match</span>
+                    <span>*The password must be contains atleast one special characters (@) and Numbers and 1 Capital Letters
+                      and it have minmum 10 characters.
+                    </span>
+
+                  </div>
+                </div>
+                <div class="form-group row mb-3">
+                  <label for="employmentType" class="col-sm-4
+                        col-form-label">Mobile Number</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="mobile" id="mobilenumber" required maxlength="10"
+                      pattern="[0-9]{10}" title="Enter valid phone number" value="{{form.mobile.value}}">
+                  </div>
+                </div>
+                <div class="form-group row mb-3">
+                  <label for="lastName" class="col-sm-4 col-form-label">E-Mail</label>
+                  <div class="col-sm-8">
+                    <input type="email" class="form-control" value="{{form.email.value}}" name="email" id="emailid" required
+                      title="please enter valid E-Mail">
+                      {{form.email.errors}}
+                  </div>
+                </div>
+                <div class="form-group row mb-3">
+                  <label for="userType" class="col-sm-4 col-form-label">User Type</label>
+                  <div class="col-sm-8">
+                    <div class="form-check d-inline-block">
+                      <input class="form-check-input" type="checkbox" name="is_admin" id="admin">
+                      <label class="form-check-label" for="admin">
+                        Admin
+                      </label>
+
+                    </div>
+                    <div class="form-check d-inline-block ml-5">
+                      <input class="form-check-input" type="checkbox" name="is_employee" id="employee" checked>
+                      <label class="form-check-label" for="employee">
+                        Employee
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-outline-success"><i class="fas fa-file-export"></i>&nbsp;Save</button>
+                  <a href="{% url 'newuser' %}"><button type="button" class="btn btn-outline-danger"><i class="far fa-trash-alt"></i> &nbsp;Cancel</button></a> 
+
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function checksame() {
+    let password1 = document.getElementById('password').value;
+    let password2 = document.getElementById('confirmpassword').value;
+    let message = document.getElementById('msgg');
+
+    if (password1 == password2) {
+      message.style.display = 'none';
+    }
+    else {
+      message.style.display = 'block';
+
+    }
+  }
+
+    // =======   Password View    ======
+
+
+const pwShowHide5 = document.querySelectorAll(".showHidePw5"),
+pwFields5 = document.querySelectorAll(".password5");
+
+  //js code to show/hide password and change icon
+
+pwShowHide5.forEach(eyeIcon =>{
+eyeIcon.addEventListener('click',()=>{
+    pwFields5.forEach(pwFields5 =>{
+        if(pwFields5.type === "password"){
+            pwFields5.type = "text";
+            pwShowHide5.forEach(icon =>{
+                icon.classList.replace("fa-eye-slash" , "fa-eye")
+            })
+        }
+        else{
+            pwFields5.type = "password"
+            pwShowHide5.forEach(icon =>{
+                icon.classList.replace("fa-eye" , "fa-eye-slash")
+            })
+        }
+    })
+})
+})
+ 
+</script>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
